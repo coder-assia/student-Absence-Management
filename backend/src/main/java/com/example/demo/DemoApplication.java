@@ -23,7 +23,7 @@ public class DemoApplication {
                 User admin = new User();
                 admin.setNom("Admin");
                 admin.setEmail("admin@gmail.com");
-                admin.setPassword("1234"); // Si tu utilises BCrypt, encode-le ici !
+                admin.setPassword("1234"); 
                 admin.setRole(Role.ADMIN);
                 
                 userRepository.save(admin);
