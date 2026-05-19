@@ -29,7 +29,9 @@ public class SecurityConfig {
 
                 .requestMatchers("/etudiants/**").permitAll()
 
-                .anyRequest().authenticated()
+                .requestMatchers("/absences/**").permitAll()
+
+                .anyRequest().permitAll()
 
             );
 

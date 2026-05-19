@@ -1,9 +1,14 @@
 package com.example.demo.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Entity
@@ -18,6 +23,8 @@ public class Etudiant {
     private String prenom;
     private String email;
     private String filiere;
-
-    // getters & setters
+    
+    @OneToMany(mappedBy = "etudiant")
+    @JsonIgnore
+    private List<Absence> absences;
 }

@@ -3,18 +3,29 @@ import { useState } from "react";
 import EtudiantForm from "../components/EtudiantForm";
 import EtudiantTable from "../components/EtudiantTable";
 
+import AbsenceForm from "../components/AbsenceForm";
+import AbsenceTable from "../components/AbsenceTable";
+
 export default function AdminDashboard() {
 
-  const [selected, setSelected] = useState(null);
+  // ======================
+  // STATE ÉTUDIANTS
+  // ======================
+  const [selectedEtudiant, setSelectedEtudiant] = useState(null);
+  const [refreshEtudiants, setRefreshEtudiants] = useState(false);
 
-  const [refresh, setRefresh] = useState(false);
+  // ======================
+  // STATE ABSENCES
+  // ======================
+  const [selectedAbsence, setSelectedAbsence] = useState(null);
+  const [refreshAbsences, setRefreshAbsences] = useState(false);
 
   return (
+    <div className="space-y-10">
 
-    <div className="space-y-8">
-
-      {/* STATISTIQUES */}
-
+      {/* ======================= */}
+      {/* 📊 STATISTIQUES */}
+      {/* ======================= */}
       <div className="grid grid-cols-3 gap-6">
 
         <div className="bg-white p-5 rounded-xl shadow">
@@ -34,8 +45,9 @@ export default function AdminDashboard() {
 
       </div>
 
-      {/* GESTION ETUDIANTS */}
-
+      {/* ======================= */}
+      {/* 👨‍🎓 GESTION ÉTUDIANTS */}
+      {/* ======================= */}
       <div className="bg-white p-6 rounded-xl shadow">
 
         <h2 className="text-2xl font-bold mb-6">
@@ -44,29 +56,58 @@ export default function AdminDashboard() {
 
         <EtudiantForm
 
-          selected={selected}
+          selected={selectedEtudiant}
 
           onFinish={() => {
-
-            setSelected(null);
-
-            setRefresh(!refresh);
-
+            setSelectedEtudiant(null);
+            setRefreshEtudiants(!refreshEtudiants);
           }}
 
         />
 
       </div>
 
-      {/* TABLEAU */}
-
       <div className="bg-white p-6 rounded-xl shadow">
 
         <EtudiantTable
 
-          onEdit={(e) => setSelected(e)}
+          onEdit={(e) => setSelectedEtudiant(e)}
 
-          refresh={refresh}
+          refresh={refreshEtudiants}
+
+        />
+
+      </div>
+
+      {/* ======================= */}
+      {/* 🚨 GESTION ABSENCES */}
+      {/* ======================= */}
+      <div className="bg-white p-6 rounded-xl shadow">
+
+        <h2 className="text-2xl font-bold mb-6">
+          Gestion des absences
+        </h2>
+
+        <AbsenceForm
+
+          selected={selectedAbsence}
+
+          onFinish={() => {
+            setSelectedAbsence(null);
+            setRefreshAbsences(!refreshAbsences);
+          }}
+
+        />
+
+      </div>
+
+      <div className="bg-white p-6 rounded-xl shadow">
+
+        <AbsenceTable
+
+          onEdit={(a) => setSelectedAbsence(a)}
+
+          refresh={refreshAbsences}
 
         />
 
