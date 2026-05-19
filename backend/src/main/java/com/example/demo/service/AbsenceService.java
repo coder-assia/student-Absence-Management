@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -50,5 +51,9 @@ public class AbsenceService {
 
     public void delete(Long id) {
         repo.deleteById(id);
+    }
+
+    public List<Absence> search(String nom, String matiere, LocalDate date) {
+    return repo.search(nom, matiere, date);
     }
 }

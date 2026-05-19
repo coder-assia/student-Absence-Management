@@ -21,3 +21,14 @@ export const deleteAbsence = (id) => {
 export const getJustificationUrl = (id) => {
   return `${API_URL}/${id}/justification`;
 };
+
+export const searchAbsences = (filters) => {
+
+  return axios.get(
+    "http://localhost:8082/absences/search",
+    {
+      params: filters
+    }
+  );
+
+};

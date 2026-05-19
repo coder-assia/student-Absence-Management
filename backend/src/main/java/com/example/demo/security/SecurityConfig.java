@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -19,10 +20,13 @@ public class SecurityConfig {
 
         http
 
-            .cors(cors -> {})
+            // ✅ CORS
+            .cors(Customizer.withDefaults())
 
+            // ✅ disable csrf
             .csrf(csrf -> csrf.disable())
 
+            // ✅ routes autorisées
             .authorizeHttpRequests(auth -> auth
 
                 .requestMatchers("/auth/**").permitAll()
@@ -43,20 +47,38 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
+        // ✅ frontend React
         configuration.setAllowedOrigins(
                 List.of("http://localhost:5173")
         );
 
+        // ✅ méthodes HTTP
         configuration.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                List.of(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
         );
 
+        // ✅ headers
         configuration.setAllowedHeaders(List.of("*"));
+
+        // ✅ authorization token
+        configuration.setExposedHeaders(List.of("Authorization"));
+
+        // ✅ credentials
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
 
         return source;
     }
