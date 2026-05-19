@@ -7,3 +7,14 @@ export const createAbsence = (data) =>
 
 export const deleteAbsence = (id) =>
   api.delete(`/absences/${id}`);
+
+export const searchAbsences = async (filters) => {
+
+  return axios.get(
+    "http://localhost:8082/absences/search",
+    {
+      params: filters,
+    }
+  );
+
+};
