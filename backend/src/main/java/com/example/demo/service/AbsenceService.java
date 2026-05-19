@@ -24,14 +24,26 @@ public class AbsenceService {
         return repo.save(a);
     }
 
+    public Absence getById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Absence not found"));
+    }
+
     public Absence update(Long id, Absence newData) {
 
-        Absence a = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Absence not found"));
+        Absence a = getById(id);
 
         a.setDate(newData.getDate());
         a.setMotif(newData.getMotif());
+        a.setMatiere(newData.getMatiere());
+        a.setJustified(newData.isJustified());
         a.setEtudiant(newData.getEtudiant());
+
+        if (!newData.isJustified()) {
+            a.setJustificationDocument(null);
+        } else if (newData.getJustificationDocument() != null) {
+            a.setJustificationDocument(newData.getJustificationDocument());
+        }
 
         return repo.save(a);
     }

@@ -2,16 +2,7 @@ package com.example.demo.model;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -26,13 +17,14 @@ public class Absence {
 
     private String motif;
 
+    private String matiere;
+
+    private String justificationDocument;
+
     @Column(nullable = false)
     private boolean justified = false;
 
-    // relation avec étudiant
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "etudiant_id")
-    @JsonManagedReference
     private Etudiant etudiant;
-
 }
