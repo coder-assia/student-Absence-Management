@@ -10,8 +10,8 @@ export const deleteAbsence = (id) =>
 
 export const searchAbsences = async (filters) => {
 
-  return axios.get(
-    "http://localhost:8082/absences/search",
+  return api.get(
+    "/absences/search",
     {
       params: filters,
     }

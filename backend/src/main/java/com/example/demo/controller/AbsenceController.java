@@ -31,8 +31,13 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.demo.dto.AbsenceRequest;
 import com.example.demo.model.Absence;
 import com.example.demo.model.Etudiant;
+import com.example.demo.model.Role;
+import com.example.demo.model.User;
 import com.example.demo.repository.EtudiantRepository;
+import com.example.demo.security.RoleAccessService;
 import com.example.demo.service.AbsenceService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/absences")
@@ -43,23 +48,48 @@ public class AbsenceController {
 
     private final AbsenceService service;
     private final EtudiantRepository etudiantRepository;
+    private final RoleAccessService roleAccessService;
 
-    public AbsenceController(AbsenceService service, EtudiantRepository etudiantRepository) {
+    public AbsenceController(
+            AbsenceService service,
+            EtudiantRepository etudiantRepository,
+            RoleAccessService roleAccessService) {
         this.service = service;
         this.etudiantRepository = etudiantRepository;
+        this.roleAccessService = roleAccessService;
     }
 
     // GET ALL
     @GetMapping
-    public List<Absence> getAll() {
-        return service.getAll();
+    public List<Absence> getAll(HttpServletRequest request) {
+        User user = roleAccessService.requireAny(request, Role.ADMIN, Role.ENSEIGNANT, Role.ETUDIANT);
+
+        if (user.getRole() == Role.ADMIN) {
+            return service.getAll();
+        }
+
+        if (user.getRole() == Role.ENSEIGNANT) {
+            return service.getForTeacher(user.getMatiere(), user.getFiliere());
+        }
+
+        return service.getForStudent(user.getEmail());
     }
 
     // CREATE (PROPRE + SAFE)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Absence create(@ModelAttribute AbsenceRequest request) {
+    public Absence create(@ModelAttribute AbsenceRequest request, HttpServletRequest httpRequest) {
+        User user = roleAccessService.requireAny(httpRequest, Role.ADMIN, Role.ENSEIGNANT);
 
         Etudiant etudiant = findEtudiant(request);
+
+        if (user.getRole() == Role.ENSEIGNANT) {
+            if (!containsValue(user.getFiliere(), etudiant.getFiliere())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cet etudiant n'appartient pas a votre filiere");
+            }
+            if (!containsValue(user.getMatiere(), request.getMatiere())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ce module n'est pas affecte a votre compte");
+            }
+        }
 
         Absence absence = new Absence();
         absence.setDate(request.getDate());
@@ -74,7 +104,11 @@ public class AbsenceController {
 
     // UPDATE
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Absence update(@PathVariable Long id, @ModelAttribute AbsenceRequest request) {
+    public Absence update(
+            @PathVariable Long id,
+            @ModelAttribute AbsenceRequest request,
+            HttpServletRequest httpRequest) {
+        roleAccessService.requireAny(httpRequest, Role.ADMIN);
 
         Etudiant etudiant = findEtudiant(request);
 
@@ -90,8 +124,10 @@ public class AbsenceController {
     }
 
     @GetMapping("/{id}/justification")
-    public ResponseEntity<Resource> downloadJustification(@PathVariable Long id) {
+    public ResponseEntity<Resource> downloadJustification(@PathVariable Long id, HttpServletRequest request) {
+        User user = roleAccessService.requireAny(request, Role.ADMIN, Role.ENSEIGNANT, Role.ETUDIANT);
         Absence absence = service.getById(id);
+        requireCanReadAbsence(user, absence);
 
         if (absence.getJustificationDocument() == null || absence.getJustificationDocument().isBlank()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Document de justification introuvable");
@@ -116,7 +152,8 @@ public class AbsenceController {
 
     // DELETE
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id, HttpServletRequest request) {
+        roleAccessService.requireAny(request, Role.ADMIN);
         service.delete(id);
     }
 
@@ -161,8 +198,10 @@ public class AbsenceController {
     public List<Absence> search(
             @RequestParam(required = false) String nom,
             @RequestParam(required = false) String matiere,
-            @RequestParam(required = false) String date
+            @RequestParam(required = false) String date,
+            HttpServletRequest request
     ) {
+        User user = roleAccessService.requireAny(request, Role.ADMIN, Role.ENSEIGNANT, Role.ETUDIANT);
 
         LocalDate parsedDate = null;
 
@@ -170,6 +209,69 @@ public class AbsenceController {
             parsedDate = LocalDate.parse(date);
         }
 
-        return service.search(nom, matiere, parsedDate);
+        if (user.getRole() == Role.ADMIN) {
+            return service.search(nom, matiere, parsedDate);
+        }
+
+        if (user.getRole() == Role.ENSEIGNANT) {
+            return service.searchForTeacherMulti(nom, matiere, parsedDate, user.getMatiere(), user.getFiliere());
+        }
+
+        return service.searchForStudent(nom, matiere, parsedDate, user.getEmail());
+    }
+
+    @PostMapping(value = "/{id}/justify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Absence justifyAbsence(
+            @PathVariable Long id,
+            @ModelAttribute AbsenceRequest request,
+            HttpServletRequest httpRequest) {
+        User user = roleAccessService.requireAny(httpRequest, Role.ETUDIANT);
+        Absence absence = service.getById(id);
+
+        if (absence.getEtudiant() == null || !absence.getEtudiant().getEmail().equalsIgnoreCase(user.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous pouvez justifier seulement vos absences");
+        }
+
+        request.setJustified(true);
+        absence.setJustified(true);
+        absence.setJustificationDocument(saveJustificationDocument(request));
+
+        return service.save(absence);
+    }
+
+    private void requireCanReadAbsence(User user, Absence absence) {
+        if (user.getRole() == Role.ADMIN) {
+            return;
+        }
+
+        if (user.getRole() == Role.ENSEIGNANT
+                && absence.getMatiere() != null
+                && absence.getEtudiant() != null
+                && containsValue(user.getMatiere(), absence.getMatiere())
+                && containsValue(user.getFiliere(), absence.getEtudiant().getFiliere())) {
+            return;
+        }
+
+        if (user.getRole() == Role.ETUDIANT
+                && absence.getEtudiant() != null
+                && absence.getEtudiant().getEmail().equalsIgnoreCase(user.getEmail())) {
+            return;
+        }
+
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette absence ne vous appartient pas");
+    }
+
+    private boolean containsValue(String list, String value) {
+        if (list == null || value == null) {
+            return false;
+        }
+
+        for (String item : list.split(",")) {
+            if (item.trim().equalsIgnoreCase(value.trim())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

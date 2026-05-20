@@ -1,118 +1,77 @@
 import { useState } from "react";
-
-import EtudiantForm from "../components/EtudiantForm";
-import EtudiantTable from "../components/EtudiantTable";
-
 import AbsenceForm from "../components/AbsenceForm";
 import AbsenceTable from "../components/AbsenceTable";
+import EtudiantForm from "../components/EtudiantForm";
+import EtudiantTable from "../components/EtudiantTable";
+import UserAccounts from "../components/UserAccounts";
 
 export default function AdminDashboard() {
-
-  // ======================
-  // STATE ÉTUDIANTS
-  // ======================
   const [selectedEtudiant, setSelectedEtudiant] = useState(null);
   const [refreshEtudiants, setRefreshEtudiants] = useState(false);
-
-  // ======================
-  // STATE ABSENCES
-  // ======================
   const [selectedAbsence, setSelectedAbsence] = useState(null);
   const [refreshAbsences, setRefreshAbsences] = useState(false);
 
   return (
-    <div className="space-y-10">
+    <div className="mx-auto max-w-7xl space-y-5">
+      <section className="rounded-lg bg-slate-950 p-6 text-white shadow-lg">
+        <p className="text-sm font-bold uppercase tracking-[0.16em] text-emerald-300">Administration</p>
+        <h1 className="mt-2 text-3xl font-black tracking-tight">Gestion globale</h1>
+        <p className="mt-2 max-w-2xl text-slate-300">
+          L'admin garde tous les droits d'acces: etudiants, absences, comptes et justifications.
+        </p>
+      </section>
 
-      {/* ======================= */}
-      {/* 📊 STATISTIQUES */}
-      {/* ======================= */}
-      <div className="grid grid-cols-3 gap-6">
-
-        <div className="bg-white p-5 rounded-xl shadow">
-          <p className="text-gray-500">Students</p>
-          <h2 className="text-2xl font-bold">120</h2>
+      <section className="grid gap-5 lg:grid-cols-2">
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+          <h2 className="mb-1 text-lg font-black">Comptes inscrits</h2>
+          <p className="mb-4 text-sm text-slate-500">
+            Les utilisateurs creent leurs comptes depuis l'inscription. L'admin supervise et peut supprimer les comptes incorrects.
+          </p>
+          <UserAccounts />
         </div>
 
-        <div className="bg-white p-5 rounded-xl shadow">
-          <p className="text-gray-500">Teachers</p>
-          <h2 className="text-2xl font-bold">12</h2>
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="mb-4 text-lg font-black">Etudiant</h2>
+          <EtudiantForm
+            selected={selectedEtudiant}
+            onFinish={() => {
+              setSelectedEtudiant(null);
+              setRefreshEtudiants((value) => !value);
+            }}
+          />
         </div>
 
-        <div className="bg-white p-5 rounded-xl shadow">
-          <p className="text-gray-500">Absences</p>
-          <h2 className="text-2xl font-bold">18</h2>
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="mb-4 text-lg font-black">Absence</h2>
+          <AbsenceForm
+            selected={selectedAbsence}
+            onFinish={() => {
+              setSelectedAbsence(null);
+              setRefreshAbsences((value) => !value);
+            }}
+          />
         </div>
+      </section>
 
-      </div>
-
-      {/* ======================= */}
-      {/* 👨‍🎓 GESTION ÉTUDIANTS */}
-      {/* ======================= */}
-      <div className="bg-white p-6 rounded-xl shadow">
-
-        <h2 className="text-2xl font-bold mb-6">
-          Gestion des étudiants
-        </h2>
-
-        <EtudiantForm
-
-          selected={selectedEtudiant}
-
-          onFinish={() => {
-            setSelectedEtudiant(null);
-            setRefreshEtudiants(!refreshEtudiants);
-          }}
-
-        />
-
-      </div>
-
-      <div className="bg-white p-6 rounded-xl shadow">
-
+      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="mb-4 text-lg font-black">Liste des etudiants</h2>
         <EtudiantTable
-
-          onEdit={(e) => setSelectedEtudiant(e)}
-
+          onEdit={(etudiant) => setSelectedEtudiant(etudiant)}
           refresh={refreshEtudiants}
-
+          canEdit
+          canDelete
         />
+      </section>
 
-      </div>
-
-      {/* ======================= */}
-      {/* 🚨 GESTION ABSENCES */}
-      {/* ======================= */}
-      <div className="bg-white p-6 rounded-xl shadow">
-
-        <h2 className="text-2xl font-bold mb-6">
-          Gestion des absences
-        </h2>
-
-        <AbsenceForm
-
-          selected={selectedAbsence}
-
-          onFinish={() => {
-            setSelectedAbsence(null);
-            setRefreshAbsences(!refreshAbsences);
-          }}
-
-        />
-
-      </div>
-
-      <div className="bg-white p-6 rounded-xl shadow">
-
+      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="mb-4 text-lg font-black">Toutes les absences</h2>
         <AbsenceTable
-
-          onEdit={(a) => setSelectedAbsence(a)}
-
+          onEdit={(absence) => setSelectedAbsence(absence)}
           refresh={refreshAbsences}
-
+          canEdit
+          canDelete
         />
-
-      </div>
-
+      </section>
     </div>
   );
 }
