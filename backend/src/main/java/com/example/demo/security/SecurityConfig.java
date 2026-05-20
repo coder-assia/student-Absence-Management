@@ -49,7 +49,7 @@ public class SecurityConfig {
 
         // ✅ frontend React
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of("http://localhost:5173", "http://127.0.0.1:5173")
         );
 
         // ✅ méthodes HTTP
@@ -64,7 +64,7 @@ public class SecurityConfig {
         );
 
         // ✅ headers
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*", "X-User-Role", "X-User-Id"));
 
         // ✅ authorization token
         configuration.setExposedHeaders(List.of("Authorization"));
