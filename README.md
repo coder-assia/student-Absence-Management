@@ -1,97 +1,103 @@
+
 <div align="center">
 
 # Gestion des Absences
 
-<img src="https://img.shields.io/badge/Full%20Stack-Projet-blueviolet?style=for-the-badge" />
-<img src="https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react" />
-<img src="https://img.shields.io/badge/Spring%20Boot-Backend-6DB33F?style=for-the-badge&logo=springboot" />
-<img src="https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwindcss" />
-<img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql" />
+### Application Web Full Stack de Gestion Universitaire
 
----
+<br>
 
-### *Application web de gestion des absences universitaires*
+<img src="https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react&logoColor=white" />
+<img src="https://img.shields.io/badge/Spring_Boot-Backend-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" />
+<img src="https://img.shields.io/badge/Tailwind_CSS-Design-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+<img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
+
+<br><br>
+
+> Gestion moderne des absences, étudiants, enseignants et modules.
 
 </div>
 
 ---
 
-# À propos du projet
+# Aperçu du Projet
 
-**Gestion des Absences** est une application web full stack développée en binôme permettant de gérer les absences des étudiants au sein d’un établissement universitaire.
+**Gestion des Absences** est une application web développée en binôme permettant de digitaliser la gestion des absences dans un établissement universitaire.
 
-Le projet permet :
-- La gestion des étudiants et enseignants
-- Le suivi des absences
-- La gestion des modules et classes
-- L’authentification sécurisée avec JWT
-
----
-
-# Stack Technique
-
-## Frontend
-- React JS
-- Tailwind CSS
-- React Router
-- Axios
-
-## Backend
-- Spring Boot
-- Spring Security
-- Spring Data JPA
-- REST API
-- JWT Authentication
-
-## Base de données
-- MySQL
-
-## Outils
-- Git & GitHub
-- Postman
-- Maven
-- Node.js
+L’application offre :
+- Une interface moderne 
+- Une gestion des étudiants et enseignants
+- Une gestion complète des absences
+- Une organisation simple et efficace des modules et classes
 
 ---
 
 # Fonctionnalités
+
+<table>
+<tr>
+<td width="50%">
 
 ## Admin
 - Gestion des étudiants
 - Gestion des enseignants
 - Gestion des modules
 - Gestion des absences
+- Consultation des données
+
+</td>
+
+<td width="50%">
 
 ## Enseignant
 - Ajouter des absences
 - Modifier des absences
 - Consulter les classes
+- Suivre les étudiants
+
+</td>
+</tr>
+</table>
+
+---
 
 ## Étudiant
-- Voir ses absences
-- Consulter ses modules
+- Consulter ses absences
+- Voir ses modules
+- Accéder à son espace personnel
+
+---
+
+# Stack Technique
+
+<div align="center">
+
+| Frontend | Backend | Base de données | Outils |
+|----------|----------|----------------|---------|
+| React JS | Spring Boot | MySQL | Git & GitHub |
+| Tailwind CSS | Spring Data JPA |  | Postman |
+| Axios | REST API |  | Maven |
+
+</div>
 
 ---
 
 # Endpoints API
 
 ```http
-POST   /auth/login              # Connexion utilisateur
-POST   /auth/register           # Inscription utilisateur
+GET    /students
+POST   /students
 
-GET    /students                # Liste des étudiants
-POST   /students                # Ajouter un étudiant
+GET    /teachers
+POST   /teachers
 
-GET    /teachers                # Liste des enseignants
-POST   /teachers                # Ajouter un enseignant
+GET    /modules
+POST   /modules
 
-GET    /modules                 # Liste des modules
-POST   /modules                 # Ajouter un module
-
-GET    /absences                # Liste des absences
-POST   /absences                # Ajouter une absence
-PUT    /absences/{id}           # Modifier une absence
-DELETE /absences/{id}           # Supprimer une absence
+GET    /absences
+POST   /absences
+PUT    /absences/{id}
+DELETE /absences/{id}
 ````
 
 ---
@@ -100,14 +106,14 @@ DELETE /absences/{id}           # Supprimer une absence
 
 ## Backend
 
-```bash
+```bash id="6uxv8o"
 cd backend
 mvn spring-boot:run
 ```
 
-Backend lancé sur :
+Backend disponible sur :
 
-```bash
+```bash id="vhqg2q"
 http://localhost:8082
 ```
 
@@ -115,27 +121,33 @@ http://localhost:8082
 
 ## Frontend
 
-```bash
+```bash id="yj4q0j"
 cd frontend
 npm install
 npm run dev
 ```
 
-Frontend lancé sur :
+Frontend disponible sur :
 
-```bash
+```bash id="vjbycg"
 http://localhost:5173
 ```
 
 ---
 
-# Structure du projet
+# Structure du Projet
 
-```bash
+```bash id="kicg7r"
 Gestion-Absences/
 │
 ├── backend/
+│   ├── src/
+│   └── pom.xml
+│
 ├── frontend/
+│   ├── src/
+│   └── package.json
+│
 └── README.md
 ```
 
@@ -143,14 +155,19 @@ Gestion-Absences/
 
 # Réalisé par
 
-* Assia MEZAROU
-* Nouhaila MOUFID
+<div align="center">
+
+### Assia MEZAROU
+
+### Nouhaila MOUFID
+
+</div>
 
 ---
 
-# Projet universitaire
+<div align="center">
 
-Projet réalisé dans le cadre d’un projet universitaire.
+### Projet Universitaire 2026
 
-```
+</div>
 ```
